@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>oneko:)</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      cursor: none; /* Hide the default cursor */
+    }
+    #cat {
+      position: absolute;
+      width: 32px; /* Cat size */
+      height: 32px;
+      pointer-events: none; /* Prevent the cat from interfering with cursor events */
+    }
+  </style>
+</head>
+<body>
+  <img id="cat" src="images/nap_1.GIF" alt="Cat Animation">
+
+  <script>
+    // Directional animations
+    const imagesRight = ["images/right_1.GIF", "images/right_2.GIF", "images/right_3.GIF"];
+    const imagesLeft = ["images/left_1.GIF", "images/left_2.GIF", "images/left_3.GIF"];
+    const imagesUp = ["images/up_1.GIF", "images/up_2.GIF", "images/up_3.GIF"];
+    const imagesDown = ["images/down_1.GIF", "images/down_2.GIF", "images/down_3.GIF"];
+
+    // Nap frames
+    const naps = ["images/nap_1.GIF", "images/nap_2.GIF", "images/nap_3.GIF"];
+
+    // Initial settings
+    let currentImageIndex = 0;
+    let mouseX = 0, mouseY = 0;
+    let catX = 100, catY = 100;
+    const maxSpeed = 0.5;
+    const sleepDistance = 30;
+    const cat = document.getElementById("cat");
+    let currentFrames = imagesRight;
+    let lastUpdate = Date.now();
+
+    // Track mouse movement
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Animate the cat
+    function animateCat() {
+      const dx = mouseX - catX;
+      const dy = mouseY - catY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance > sleepDistance) {
+        // Cat is moving toward the cursor
+        const targetAngle = Math.atan2(dy, dx);
+        catX += Math.cos(targetAngle) * maxSpeed;
+        catY += Math.sin(targetAngle) * maxSpeed;
+
+        // Determine direction
+        if (Math.abs(dx) > Math.abs(dy)) {
+          currentFrames = dx > 0 ? imagesRight : imagesLeft;
+        } else {
+          currentFrames = dy > 0 ? imagesDown : imagesUp;
+        }
+
+        // Cycle through movement frames
+        const now = Date.now();
+        if (now - lastUpdate > 150) {
+          currentImageIndex = (currentImageIndex + 1) % currentFrames.length;
+          cat.src = currentFrames[currentImageIndex];
+          lastUpdate = now;
+        }
+      } else {
+        // Cat is stationary; cycle through nap frames
+        const now = Date.now();
+        if (now - lastUpdate > 400) { // Nap frames update slower
+          currentImageIndex = (currentImageIndex + 1) % naps.length;
+          cat.src = naps[currentImageIndex];
+          lastUpdate = now;
+        }
+      }
+
+      // Update cat's position
+      cat.style.left = `${catX}px`;
+      cat.style.top = `${catY}px`;
+
+      // Loop the animation
+      requestAnimationFrame(animateCat);
+    }
+
+    // Start the animation
+    animateCat();
+  </script>
+</body>
+</html>

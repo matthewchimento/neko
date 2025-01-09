@@ -1,0 +1,55 @@
+<!-- Other content -->
+<script>
+  // Your JavaScript code here
+  const images = [
+    "images/1.gif",
+    "images/2.gif",
+    // Add paths for all your GIFs
+  ];
+
+  let currentImageIndex = 0;
+  let mouseX = 0, mouseY = 0;
+  let catX = 100, catY = 100;
+  let catState = "CHASING";
+
+  const cat = document.createElement("img");
+  cat.src = images[currentImageIndex];
+  cat.style.position = "absolute";
+  cat.style.width = "100px";
+  cat.style.height = "100px";
+  cat.style.pointerEvents = "none";
+  document.body.appendChild(cat);
+
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (catState === "SLEEPING") {
+      catState = "CHASING";
+    }
+  });
+
+  function animateCat() {
+    const dx = mouseX - catX;
+    const dy = mouseY - catY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 20) {
+      catState = "SLEEPING";
+      cat.src = images[0];
+    } else if (catState === "CHASING") {
+      const angle = Math.atan2(dy, dx);
+      catX += Math.cos(angle) * 5;
+      catY += Math.sin(angle) * 5;
+
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      cat.src = images[currentImageIndex];
+    }
+
+    cat.style.left = catX + "px";
+    cat.style.top = catY + "px";
+
+    requestAnimationFrame(animateCat);
+  }
+
+  animateCat();
+</script>
